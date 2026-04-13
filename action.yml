@@ -1,0 +1,58 @@
+name: 'W3 DEX Action'
+description: 'DEX aggregation — token swaps via 1inch across 10+ chains with best-price routing through 100+ liquidity sources.'
+author: 'w3-io'
+
+inputs:
+  command:
+    description: >
+      Operation to perform. quote, swap, approve,
+      check-allowance, list-tokens.
+    required: true
+  api-key:
+    description: '1inch API key (get from portal.1inch.dev)'
+    required: true
+  chain:
+    description: 'Target chain (ethereum, base, arbitrum, polygon, optimism, avalanche, bnb, gnosis, zksync)'
+    required: true
+
+  # Token inputs
+  src:
+    description: 'Source token address (or "ETH" for native)'
+    required: false
+  dst:
+    description: 'Destination token address'
+    required: false
+  token:
+    description: 'Token address for approve/allowance commands'
+    required: false
+
+  # Amount and execution
+  amount:
+    description: 'Amount in base units (wei for ETH, smallest unit for tokens)'
+    required: false
+  slippage:
+    description: 'Max slippage percentage for swaps (default 1 = 1%)'
+    required: false
+    default: '1'
+  from:
+    description: 'Sender wallet address (required for swap)'
+    required: false
+  receiver:
+    description: 'Destination address for swap output (defaults to from)'
+    required: false
+  wallet:
+    description: 'Wallet address for allowance checks'
+    required: false
+
+  # RPC
+  rpc-url:
+    description: 'Custom RPC endpoint URL'
+    required: false
+
+outputs:
+  result:
+    description: 'JSON result of the operation'
+
+runs:
+  using: 'node24'
+  main: 'dist/index.js'
