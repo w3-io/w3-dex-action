@@ -1,0 +1,74 @@
+# E2E Test Workflow
+#
+# Exercises every command against real APIs.
+# Run on a local W3 network with:
+#   w3 workflow deploy test/workflows/e2e.yaml
+#   w3 workflow "1inch-e2e" trigger
+#
+# Prerequisites:
+#   - W3 local network running (make dev)
+#   - W3_SECRET_1INCH_API_KEY set to a 1inch API key (from portal.1inch.dev)
+#   - Note: 1inch API access requires KYB verification on portal.1inch.dev
+
+name: 1inch-e2e
+
+steps:
+  # ── Token Discovery ────────────────────────────────────────────────────
+
+  - name: List tokens on Ethereum
+    uses: w3-io/w3-1inch-action@v0
+    with:
+      command: list-tokens
+      api-key: ${{ secrets.1INCH_API_KEY }}
+      chain: ethereum
+
+  - name: List tokens on Base
+    uses: w3-io/w3-1inch-action@v0
+    with:
+      command: list-tokens
+      api-key: ${{ secrets.1INCH_API_KEY }}
+      chain: base
+
+  # ── Quotes ─────────────────────────────────────────────────────────────
+  # ETH (native) -> USDC on Ethereum mainnet
+  # USDC address on Ethereum: 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+
+  - name: Quote ETH to USDC on Ethereum
+    uses: w3-io/w3-1inch-action@v0
+    with:
+      command: quote
+      api-key: ${{ secrets.1INCH_API_KEY }}
+      chain: ethereum
+      src: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+      dst: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+      amount: "1000000000000000000"
+
+  # USDC -> USDT on Arbitrum
+  # USDC on Arbitrum: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831
+  # USDT on Arbitrum: 0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9
+
+  - name: Quote USDC to USDT on Arbitrum
+    uses: w3-io/w3-1inch-action@v0
+    with:
+      command: quote
+      api-key: ${{ secrets.1INCH_API_KEY }}
+      chain: arbitrum
+      src: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
+      dst: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9"
+      amount: "1000000"
+
+  # ── Allowance Check ────────────────────────────────────────────────────
+  # Check if a wallet has approved the 1inch router to spend USDC
+
+  - name: Check USDC allowance on Ethereum
+    uses: w3-io/w3-1inch-action@v0
+    with:
+      command: check-allowance
+      api-key: ${{ secrets.1INCH_API_KEY }}
+      chain: ethereum
+      token: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+      wallet: "0x0000000000000000000000000000000000000001"
+
+  # Note: swap and approve commands require a funded wallet and are not
+  # tested in basic e2e. They generate unsigned transactions that need
+  # the W3 bridge for signing and broadcasting.
