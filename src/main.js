@@ -48,14 +48,10 @@ const handlers = {
   },
 
   'check-allowance': async () => {
-    const result = await checkAllowance(
-      apiKey(),
-      core.getInput('chain', { required: true }),
-      {
-        token: core.getInput('token', { required: true }),
-        wallet: core.getInput('wallet', { required: true }),
-      },
-    )
+    const result = await checkAllowance(apiKey(), core.getInput('chain', { required: true }), {
+      token: core.getInput('token', { required: true }),
+      wallet: core.getInput('wallet', { required: true }),
+    })
     setJsonOutput('result', result)
   },
 

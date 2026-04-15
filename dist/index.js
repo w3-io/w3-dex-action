@@ -28333,14 +28333,10 @@ const handlers = {
   },
 
   'check-allowance': async () => {
-    const result = await checkAllowance(
-      apiKey(),
-      lib_core.getInput('chain', { required: true }),
-      {
-        token: lib_core.getInput('token', { required: true }),
-        wallet: lib_core.getInput('wallet', { required: true }),
-      },
-    )
+    const result = await checkAllowance(apiKey(), lib_core.getInput('chain', { required: true }), {
+      token: lib_core.getInput('token', { required: true }),
+      wallet: lib_core.getInput('wallet', { required: true }),
+    })
     setJsonOutput('result', result)
   },
 

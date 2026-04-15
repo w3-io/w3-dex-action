@@ -34,13 +34,13 @@ DEX aggregation for W3 workflows — token swaps via 1inch across 10+ chains wit
 
 ## Commands
 
-| Command | Type | Description |
-|---------|------|-------------|
-| `quote` | read | Get best swap price across 100+ DEXes |
-| `swap` | write | Execute a swap (auto-approves source token) |
-| `approve` | write | Approve token for 1inch router |
-| `check-allowance` | read | Check if token is approved |
-| `list-tokens` | read | List supported tokens on a chain |
+| Command           | Type  | Description                                 |
+| ----------------- | ----- | ------------------------------------------- |
+| `quote`           | read  | Get best swap price across 100+ DEXes       |
+| `swap`            | write | Execute a swap (auto-approves source token) |
+| `approve`         | write | Approve token for 1inch router              |
+| `check-allowance` | read  | Check if token is approved                  |
+| `list-tokens`     | read  | List supported tokens on a chain            |
 
 ## Chains
 
