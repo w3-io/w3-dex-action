@@ -57,6 +57,22 @@ The `swap` command auto-approves the source token if needed, so a single step ha
 - 1inch API key from [portal.1inch.dev](https://portal.1inch.dev)
 - Signer key configured via `W3_SECRET_ETHEREUM`
 
+## Authentication
+
+Two credentials — one API key for quotes/allowance reads, one
+bridge signer for writes.
+
+| Operation                                 | Needs                                                                                                    |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `quote`, `list-tokens`, `check-allowance` | 1inch API key (the `api-key` input). Bound to your account at portal.1inch.dev; subject to rate limits.  |
+| `swap`, `approve`                         | API key **plus** a funded bridge signer. Signer stays on the bridge; the action container never sees it. |
+
+> ⚠️ **KYB block.** 1inch gates production API keys behind a Know
+> Your Business review at portal.1inch.dev. Until that clears for
+> a given account, `quote` / `swap` calls will 401 or be rate-
+> limited to unusable levels. This action's code is correct — the
+> access is what's gated.
+
 ## Development
 
 ```bash

@@ -44,9 +44,9 @@ jobs:
           command: quote
           api-key: ${{ secrets.ONEINCH_API_KEY }}
           chain: ethereum
-          src: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
-          dst: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
-          amount: "1000000000000000000"
+          src: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+          dst: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+          amount: '1000000000000000000'
 
       # USDC -> USDT on Arbitrum
       # USDC on Arbitrum: 0xaf88d065e77c8cC2239327C5EDb3A432268e5831
@@ -58,9 +58,9 @@ jobs:
           command: quote
           api-key: ${{ secrets.ONEINCH_API_KEY }}
           chain: arbitrum
-          src: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
-          dst: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9"
-          amount: "1000000"
+          src: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831'
+          dst: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9'
+          amount: '1000000'
 
       # ── Allowance Check ────────────────────────────────────────────────────
       # Check if a wallet has approved the 1inch router to spend USDC
@@ -71,8 +71,8 @@ jobs:
           command: check-allowance
           api-key: ${{ secrets.ONEINCH_API_KEY }}
           chain: ethereum
-          token: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
-          wallet: "0x0000000000000000000000000000000000000001"
+          token: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+          wallet: '0x0000000000000000000000000000000000000001'
 
       # Note: swap and approve commands require a funded wallet and are not
       # tested in basic e2e. They generate unsigned transactions that need
