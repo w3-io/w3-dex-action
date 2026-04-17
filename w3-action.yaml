@@ -2,7 +2,7 @@ kind: integration
 partner: 1inch
 name: 1inch DEX Aggregation
 version: 0.1.0
-repo: w3-io/w3-dex-action
+repo: w3-io/w3-1inch-action
 
 commands:
   - name: quote

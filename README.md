@@ -6,7 +6,7 @@ DEX aggregation for W3 workflows — token swaps via 1inch across 10+ chains wit
 
 ```yaml
 # Get a swap quote
-- uses: w3-io/w3-dex-action@v0
+- uses: w3-io/w3-1inch-action@v0
   id: quote
   with:
     command: quote
@@ -17,7 +17,7 @@ DEX aggregation for W3 workflows — token swaps via 1inch across 10+ chains wit
     amount: '1000000000'
 
 # Execute a swap (auto-approves if needed)
-- uses: w3-io/w3-dex-action@v0
+- uses: w3-io/w3-1inch-action@v0
   env:
     W3_SECRET_ETHEREUM: ${{ secrets.W3_SECRET_ETHEREUM }}
   bridge-allow: [ethereum/send-transaction]

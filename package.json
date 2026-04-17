@@ -1,5 +1,5 @@
 {
-  "name": "w3-dex-action",
+  "name": "w3-1inch-action",
   "version": "0.1.0",
   "private": true,
   "description": "DEX aggregation for W3 workflows — token swaps via 1inch across 10+ chains with best-price routing.",

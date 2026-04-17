@@ -26,11 +26,11 @@ on 2026-04-15. GitHub redirects the old URL, so existing workflows
 that reference `w3-io/w3-dex-action@v0` should continue to work,
 but:
 
-- [ ] README's Quick Start still shows `uses: w3-io/w3-dex-action@v0`.
+- [x] README's Quick Start still shows `uses: w3-io/w3-dex-action@v0`.
       Update to `w3-io/w3-1inch-action@v0` so new users copy-paste
       the canonical name.
-- [ ] `docs/guide.md` likely has the same stale reference. Check
-      and fix.
+- [x] `docs/guide.md` likely has the same stale reference. Check
+      and fix. (No stale references found in docs/guide.md.)
 
 ## Potential additions
 
