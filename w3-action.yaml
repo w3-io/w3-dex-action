@@ -3,6 +3,20 @@ partner: 1inch
 name: 1inch DEX Aggregation
 version: 0.1.0
 repo: w3-io/w3-1inch-action
+description: >
+  1inch is a DEX aggregator that finds the best swap rates across 100+
+  decentralized exchanges. Supports multi-chain swaps on Ethereum, BSC,
+  Polygon, Arbitrum, Optimism, Avalanche, and more. Features include MEV
+  protection via Fusion mode, limit orders, and optimal routing that
+  splits trades across multiple liquidity sources for the best price.
+context: >
+  Use when you need the best price across multiple DEXes for a token swap.
+  Do not use for single-DEX-specific features (e.g. Uniswap LP management).
+  Cost: swap fees vary by route and network gas; 1inch does not charge a
+  protocol fee on aggregation. Safety: swaps are irreversible once confirmed
+  on-chain; always quote before swapping and set appropriate slippage.
+  Prerequisites: requires an API key from portal.1inch.dev (currently KYB
+  blocked — approval required before keys are issued).
 
 commands:
   - name: quote
