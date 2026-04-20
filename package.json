@@ -9,7 +9,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint src/",
-    "test": "node --test test/*.test.js",
+    "test": "node --experimental-test-module-mocks --test test/*.test.js",
     "all": "npm run format && npm run lint && npm run test && npm run build"
   },
   "dependencies": {
