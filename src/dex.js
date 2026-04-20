@@ -72,6 +72,12 @@ function resolveToken(token) {
   return token
 }
 
+function validateAddress(addr, label) {
+  if (!addr || !/^0x[0-9a-fA-F]{40}$/.test(addr)) {
+    throw new DexError('INVALID_ADDRESS', `${label} must be a valid Ethereum address`)
+  }
+}
+
 async function apiCall(apiKey, chainId, path, params = {}) {
   const url = new URL(`${API_BASE}/${chainId}${path}`)
   for (const [key, value] of Object.entries(params)) {
@@ -98,13 +104,19 @@ async function apiCall(apiKey, chainId, path, params = {}) {
 export async function quote(apiKey, chain, { src, dst, amount }) {
   if (!src) throw new DexError('MISSING_TOKEN', 'src token is required')
   if (!dst) throw new DexError('MISSING_TOKEN', 'dst token is required')
-  if (!amount) throw new DexError('MISSING_AMOUNT', 'amount is required')
+  if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+    throw new DexError('INVALID_AMOUNT', 'amount must be a positive number')
+  }
 
   const { chainId } = resolveChain(chain)
+  const srcToken = resolveToken(src)
+  const dstToken = resolveToken(dst)
+  if (srcToken !== NATIVE_TOKEN) validateAddress(srcToken, 'src token')
+  if (dstToken !== NATIVE_TOKEN) validateAddress(dstToken, 'dst token')
 
   const result = await apiCall(apiKey, chainId, '/quote', {
-    src: resolveToken(src),
-    dst: resolveToken(dst),
+    src: srcToken,
+    dst: dstToken,
     amount,
     includeTokensInfo: true,
     includeGas: true,
@@ -128,15 +140,18 @@ export async function checkAllowance(apiKey, chain, { token, wallet }) {
   if (!wallet) throw new DexError('MISSING_WALLET', 'wallet address is required')
 
   const { chainId } = resolveChain(chain)
+  const resolved = resolveToken(token)
+  if (resolved !== NATIVE_TOKEN) validateAddress(resolved, 'token')
+  validateAddress(wallet, 'wallet')
 
   const result = await apiCall(apiKey, chainId, '/approve/allowance', {
-    tokenAddress: resolveToken(token),
+    tokenAddress: resolved,
     walletAddress: wallet,
   })
 
   return {
     chain,
-    token: resolveToken(token),
+    token: resolved,
     wallet,
     allowance: String(result.allowance),
   }
@@ -172,15 +187,17 @@ export async function approve(apiKey, chain, { token, amount, rpcUrl }) {
   if (!token) throw new DexError('MISSING_TOKEN', 'token address is required')
 
   const { chainId, bridgeNetwork } = resolveChain(chain)
+  const resolved = resolveToken(token)
+  if (resolved !== NATIVE_TOKEN) validateAddress(resolved, 'token')
 
   const result = await apiCall(apiKey, chainId, '/approve/transaction', {
-    tokenAddress: resolveToken(token),
+    tokenAddress: resolved,
     amount: amount || undefined, // omit for unlimited approval
   })
 
   // Execute the approval via the bridge
   const receipt = await bridge.chain(
-    'ethereum',
+    bridgeNetwork,
     'send-transaction',
     {
       to: result.to,
@@ -194,7 +211,7 @@ export async function approve(apiKey, chain, { token, amount, rpcUrl }) {
   return {
     txHash: receipt?.txHash || receipt?.tx_hash || String(receipt),
     chain,
-    token: resolveToken(token),
+    token: resolved,
     amount: amount || 'unlimited',
   }
 }
@@ -211,14 +228,25 @@ export async function swap(
 ) {
   if (!src) throw new DexError('MISSING_TOKEN', 'src token is required')
   if (!dst) throw new DexError('MISSING_TOKEN', 'dst token is required')
-  if (!amount) throw new DexError('MISSING_AMOUNT', 'amount is required')
+  if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+    throw new DexError('INVALID_AMOUNT', 'amount must be a positive number')
+  }
   if (!from) throw new DexError('MISSING_FROM', 'from address is required')
+  if (slippage != null && (Number(slippage) < 0 || Number(slippage) > 50)) {
+    throw new DexError('INVALID_SLIPPAGE', 'slippage must be between 0 and 50')
+  }
 
   const { chainId, bridgeNetwork } = resolveChain(chain)
   const srcToken = resolveToken(src)
   const dstToken = resolveToken(dst)
+  if (srcToken !== NATIVE_TOKEN) validateAddress(srcToken, 'src token')
+  if (dstToken !== NATIVE_TOKEN) validateAddress(dstToken, 'dst token')
+  validateAddress(from, 'from')
+  if (receiver) validateAddress(receiver, 'receiver')
 
-  // Auto-approve if needed (skip for native token swaps)
+  // Auto-approve if needed (skip for native token swaps).
+  // Approves the exact swap amount rather than unlimited to limit exposure
+  // if the router contract is compromised.
   if (srcToken !== NATIVE_TOKEN) {
     const allowance = await apiCall(apiKey, chainId, '/approve/allowance', {
       tokenAddress: srcToken,
@@ -228,11 +256,11 @@ export async function swap(
     if (BigInt(allowance.allowance) < BigInt(amount)) {
       const approveTx = await apiCall(apiKey, chainId, '/approve/transaction', {
         tokenAddress: srcToken,
-        amount,
+        amount, // exact-amount approval — intentional, see comment above
       })
 
       await bridge.chain(
-        'ethereum',
+        bridgeNetwork,
         'send-transaction',
         {
           to: approveTx.to,
@@ -263,7 +291,7 @@ export async function swap(
 
   // Execute the swap via the bridge
   const receipt = await bridge.chain(
-    'ethereum',
+    bridgeNetwork,
     'send-transaction',
     {
       to: result.tx.to,

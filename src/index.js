@@ -12,6 +12,8 @@ import { run } from './main.js'
 
 // Suppress noisy unhandled rejection warnings; main.js's try/catch handles
 // them via core.setFailed and structured error reporting.
-process.on('unhandledRejection', () => {})
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled rejection:', err)
+})
 
 run()

@@ -38,10 +38,10 @@ describe('quote', () => {
     )
   })
 
-  it('throws MISSING_AMOUNT when amount is empty', async () => {
+  it('throws INVALID_AMOUNT when amount is empty', async () => {
     await assert.rejects(
       () => quote('key', 'ethereum', { src: '0x1', dst: '0x2', amount: '' }),
-      (err) => err instanceof DexError && err.code === 'MISSING_AMOUNT',
+      (err) => err instanceof DexError && err.code === 'INVALID_AMOUNT',
     )
   })
 })
